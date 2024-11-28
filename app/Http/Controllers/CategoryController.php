@@ -2,35 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CategoryStoreRequest;
-use App\Http\Requests\CategoryUpdateRequest;
-use App\Http\Resources\CategoryCollection;
-use App\Http\Resources\CategoryResource;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 
 class CategoryController extends Controller
 {
-    public function index(): CategoryCollection
+    public function index()
     {
         $categories = Category::select('description')->get();
-        return new CategoryCollection($categories);
+
+        return response()->json(['data' => $categories]);
     }
 
-    public function store(CategoryStoreRequest $request)
+    public function store(StoreCategoryRequest $request)
     {
         $newCategory = Category::create($request->validated());
-        return new CategoryResource($newCategory);
+
+        return response()->json(['data' => $newCategory], 201);
     }
 
-    public function update(CategoryUpdateRequest $request, int $id)
+    public function update(UpdateCategoryRequest $request, int $id)
     {
-        $updatedCategory = tap(Category::findOrFail($id))->update($request->validated());
-        return new CategoryResource($updatedCategory);
+        Category::findOrFail($id)->update($request->validated());
+
+        return response()->noContent();
     }
 
     public function destroy(int $id)
     {
         Category::destroy($id);
+
         return response()->noContent();
     }
 }
