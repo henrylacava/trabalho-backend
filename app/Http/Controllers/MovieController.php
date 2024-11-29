@@ -16,7 +16,7 @@ class MovieController extends Controller
             'movies.director',
             'categories.description AS category',
         )
-            ->joinRelationship('category')
+            ->join('categories', 'movies.category_id', '=', 'categories.id')
             ->get();
 
         return response()->json(['data' => $movies]);
